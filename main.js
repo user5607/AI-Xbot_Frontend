@@ -296,13 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // 学生登录逻辑增强调试信息
-        console.log('学生登录请求信息:', {role: 'student', username: studentId, school: school});
-        console.log('学生登录响应数据:', data);
-        console.log('学生登录成功状态:', data.success);
-        if (data.success) {
-            console.log('学生登录成功，准备跳转:', `students/students.html?studentName=${encodeURIComponent(name)}`);
-        }
+        // 调试代码已移至各自的角色登录逻辑内部
     });
     
     // 密码可见性切换功能
