@@ -1029,4 +1029,7 @@ window.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // 加载工具盒并初始化Blockly
+    loadToolboxAndInitBlockly();
 });

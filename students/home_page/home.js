@@ -5,217 +5,21 @@ let selectedProject = "正方形路径挑战";
 
 // 页面加载完成后初始化
 window.onload = function() {
-    // 初始化界面切换
-    initPageNavigation();
-    
     // 初始化首页交互
     initHomePage();
     
-    // 初始化导航栏下拉菜单
-    initNavigationDropdowns();
-};
-
-// 初始化页面导航
-function initPageNavigation() {
-    const homeLink = document.getElementById('home-link');
-    const platformLink = document.getElementById('platform-link');
-    const learnLink = document.getElementById('learn-link');
-    const challengeLink = document.getElementById('challenge-link');
-    const startProgrammingBtn = document.getElementById('start-programming-btn');
-    const homePage = document.getElementById('home-page');
-    const platformPage = document.getElementById('platform-page');
-    const learnPage = document.getElementById('learn-page');
-    const challengePage = document.getElementById('challenge-page');
-    
-    // 首页链接点击事件
-    homeLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        showHomePage();
-        updateNavigationActiveState(homeLink);
-    });
-    
-    // 编程平台链接点击事件
-    platformLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        showPlatformPage();
-        updateNavigationActiveState(platformLink);
-    });
-    
-    // 学习中心链接点击事件
-    learnLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        showLearnPage();
-        updateNavigationActiveState(learnLink);
-        log('📚 跳转到学习中心');
-    });
-    
-    // 挑战任务链接点击事件
-    challengeLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        showChallengePage();
-        updateNavigationActiveState(challengeLink);
-        log('🎯 跳转到挑战任务');
-    });
-    
     // 开始编程按钮点击事件
-    startProgrammingBtn.addEventListener('click', function() {
-        showPlatformPage();
-        updateNavigationActiveState(platformLink);
-    });
-    
-    // 显示首页
-    function showHomePage() {
-        hideAllPages();
-        homePage.classList.remove('hidden');
-        homePage.classList.add('flex');
-    }
-    
-    // 显示编程平台
-    function showPlatformPage() {
-        hideAllPages();
-        platformPage.classList.remove('hidden');
-        platformPage.classList.add('flex');
-        
-        // 初始化Blockly工作区（如果还未初始化）
-        if (!workspace) {
-            initBlockly();
-        }
-        
-        // 更新当前项目信息
-        updateCurrentProjectInfo();
-    }
-    
-    // 显示学习中心
-    function showLearnPage() {
-        hideAllPages();
-        learnPage.classList.remove('hidden');
-        learnPage.classList.add('flex');
-    }
-    
-    // 显示挑战任务
-    function showChallengePage() {
-        hideAllPages();
-        challengePage.classList.remove('hidden');
-        challengePage.classList.add('flex');
-    }
-    
-    // 隐藏所有页面
-    function hideAllPages() {
-        homePage.classList.add('hidden');
-        homePage.classList.remove('flex');
-        platformPage.classList.add('hidden');
-        platformPage.classList.remove('flex');
-        learnPage.classList.add('hidden');
-        learnPage.classList.remove('flex');
-        challengePage.classList.add('hidden');
-        challengePage.classList.remove('flex');
-    }
-    
-    // 更新导航激活状态
-    function updateNavigationActiveState(activeLink) {
-        const navLinks = [homeLink, platformLink, learnLink, challengeLink];
-        navLinks.forEach(link => {
-            if (link === activeLink) {
-                link.classList.add('text-blue-400', 'font-medium', 'border-b-2', 'border-blue-400', 'pb-1');
-                link.classList.remove('text-white', 'hover:text-blue-400');
-            } else {
-                link.classList.remove('text-blue-400', 'font-medium', 'border-b-2', 'border-blue-400', 'pb-1');
-                link.classList.add('text-white', 'hover:text-blue-400');
+    const startProgrammingBtn = document.getElementById('start-programming-btn');
+    if (startProgrammingBtn) {
+        startProgrammingBtn.addEventListener('click', function() {
+            // 由于使用iframe导航，我们需要通过父窗口来切换页面
+            if (window.parent) {
+                const platformLink = window.parent.document.getElementById('platform-link');
+                if (platformLink) {
+                    platformLink.click();
+                }
             }
         });
-    }
-}
-
-// 初始化导航栏下拉菜单
-function initNavigationDropdowns() {
-    // 机器人选择下拉菜单
-    const robotSelector = document.getElementById('robot-selector');
-    const robotButton = robotSelector.querySelector('button');
-    const robotDropdown = robotSelector.querySelector('div[class*="absolute"]');
-    const robotOptions = robotSelector.querySelectorAll('.robot-option');
-    
-    // 项目选择下拉菜单
-const projectSelector = document.getElementById('project-selector');
-    const projectButton = projectSelector.querySelector('button');
-    const projectDropdown = projectSelector.querySelector('div[class*="absolute"]');
-    const projectOptions = projectSelector.querySelectorAll('.project-option');
-    
-    // 机器人选择按钮点击事件
-    robotButton.addEventListener('click', function(e) {
-e.stopPropagation();
-        toggleDropdown(robotDropdown);
-        closeDropdown(projectDropdown);
-    });
-    
-    // 项目选择按钮点击事件
-    projectButton.addEventListener('click', function(e) {
-        e.stopPropagation();
-        toggleDropdown(projectDropdown);
-        closeDropdown(robotDropdown);
-    });
-    
-// 点击其他区域关闭下拉菜单
-    document.addEventListener('click', function() {
-        closeDropdown(robotDropdown);
-        closeDropdown(projectDropdown);
-    });
-    
-    // 机器人选项点击事件
-    robotOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            const robotName = this.getAttribute('data-robot');
-            selectRobot(robotName);
-            closeDropdown(robotDropdown);
-        });
-    });
-    
-    // 项目选项点击事件
-    projectOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            const projectName = this.getAttribute('data-project');
-            selectProject(projectName);
-            closeDropdown(projectDropdown);
-        });
-    });
-    
-    // 切换下拉菜单显示状态
-    function toggleDropdown(dropdown) {
-        dropdown.classList.toggle('hidden');
-    }
-    
-    // 关闭下拉菜单
-    function closeDropdown(dropdown) {
-        dropdown.classList.add('hidden');
-    }
-    
-    // 选择机器人
-    function selectRobot(robotName) {
-        selectedRobot = robotName;
-        document.getElementById('selected-robot').textContent = robotName;
-        log(`🤖 选择了 ${robotName}`);
-        
-        // 更新首页的机器人选择状态
-        updateHomePageRobotSelection(robotName);
-        
-        // 如果在编程平台页面，更新相关信息
-        if (!document.getElementById('platform-page').classList.contains('hidden')) {
-            log(`🔄 已切换到 ${robotName}`);
-        }
-    }
-    
-    // 选择项目
-    function selectProject(projectName) {
-        selectedProject = projectName;
-        document.getElementById('selected-project').textContent = projectName;
-        log(`📁 选择了项目 "${projectName}"`);
-        
-        // 更新首页的项目选择状态
-        updateHomePageProjectSelection(projectName);
-        
-        // 如果在编程平台页面，更新相关信息
-        if (!document.getElementById('platform-page').classList.contains('hidden')) {
-            updateCurrentProjectInfo();
-        }
     }
 }
 
@@ -227,7 +31,8 @@ function initHomePage() {
     robotCards.forEach(card => {
         card.addEventListener('click', function() {
             const robotName = this.getAttribute('data-robot');
-            selectRobot(robotName);
+            selectedRobot = robotName;
+            log(`🤖 选择了 ${robotName}`);
         });
     });
     
@@ -236,7 +41,8 @@ function initHomePage() {
     projectCards.forEach(card => {
         card.addEventListener('click', function() {
             const projectName = this.getAttribute('data-project');
-            selectProject(projectName);
+            selectedProject = projectName;
+            log(`📁 选择了项目 "${projectName}"`);
         });
     });
     
@@ -312,27 +118,7 @@ function createNewProject() {
     }
 }
 
-// 选择机器人
-function selectRobot(robotName) {
-    selectedRobot = robotName;
-    
-    // 更新导航栏中的机器人选择
-    document.getElementById('selected-robot').textContent = robotName;
-    
-    // 更新首页的机器人选择状态
-    updateHomePageRobotSelection(robotName);
-}
 
-// 选择项目
-function selectProject(projectName) {
-    selectedProject = projectName;
-    
-    // 更新导航栏中的项目选择
-    document.getElementById('selected-project').textContent = projectName;
-    
-    // 更新首页的项目选择状态
-    updateHomePageProjectSelection(projectName);
-}
 
 // 更新首页的机器人选择状态
 function updateHomePageRobotSelection(robotName) {
